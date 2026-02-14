@@ -1,6 +1,9 @@
 # PlatformIO / ESP-IDF build artifacts
 .pio/
 
+# ESP-IDF component manager hash files (generated; noisy)
+**/.component_hash
+
 # IDF Component Manager downloaded components (regen on build)
 managed_components/
 
