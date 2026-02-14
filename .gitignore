@@ -1,0 +1,40 @@
+# PlatformIO / ESP-IDF build artifacts
+.pio/
+
+# IDF Component Manager downloaded components (regen on build)
+managed_components/
+
+# IDF component manager lock file contains absolute local paths on this machine
+# (safe to regenerate, but noisy/leaky for public repos)
+dependencies.lock
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtualenvs
+.venv/
+.venv-ws/
+openclaw_skill/littleai/.venv/
+
+# macOS
+.DS_Store
+
+# Audio scratch files
+*.wav
+*.aiff
+*.aif
+
+# Waveshare reference bundle is huge and contains binaries and its own .git
+waveshare_ref/
+
+# VS Code (keep settings optionally; ignore machine-specific caches)
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+
+# PlatformIO/VSCode auto-generated files (contain absolute paths)
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+
+# Optional: uncomment if you don't want to publish local serial port settings
+# platformio.ini

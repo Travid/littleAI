@@ -1,0 +1,192 @@
+# littleAI (Waveshare ESP32-S3 Touch AMOLED 1.8)
+
+PlatformIO **ESP-IDF** project for a small on-device “face” (LVGL) controlled over a **WebSocket JSON control plane**.
+
+Hardware:
+- Waveshare **ESP32-S3 Touch AMOLED 1.8**
+- AMOLED: **SH8601** over QSPI
+- Touch: **FT3168** (driven via ESP-IDF’s FT5x06 touch driver)
+- Audio: onboard **ES8311** codec + speaker (I2S)
+
+## What works right now
+- Face UI (LVGL) on AMOLED: eyes/pupils/blink/mouth + caption
+- WebSocket server: `ws://<device-ip>:8080/ws`
+- Wi‑Fi captive portal (SoftAP) on first boot / when STA fails:
+  - Join `littleAI-setup-XXXX`
+  - Portal: `http://192.168.4.1/`
+  - Saves credentials to NVS and connects STA
+- Audio output (speaker): beeps + streamed PCM speech
+
+## Project layout
+- Face + LVGL + display/touch init: `src/main.c`
+- WebSocket server: `src/ws_server.c`
+- Wi‑Fi portal + DNS hijack: `src/wifi_manager.c`
+- Face state model: `include/face_protocol.h`, `src/face_protocol.c`
+- Audio (ES8311 + I2S): `include/audio.h`, `src/audio.c`
+- Pins: `include/pin_config.h`
+
+## Prerequisites
+- Hardware: Waveshare **ESP32-S3 Touch AMOLED 1.8**
+- Host tools:
+  - PlatformIO (VS Code extension or CLI)
+  - Python 3 (optional, for helper scripts)
+
+## Install / Build / Flash
+1) Clone the repo.
+
+2) Open the folder in VS Code (PlatformIO) or use the CLI.
+
+3) (Optional but recommended) set the serial ports in `platformio.ini`:
+```ini
+; upload_port = /dev/cu.usbmodem101
+; monitor_port = /dev/cu.usbmodem101
+```
+
+4) Build:
+```bash
+pio run -e esp32-s3-amoled18
+```
+
+5) Flash:
+```bash
+pio run -e esp32-s3-amoled18 -t upload
+```
+
+6) Monitor:
+```bash
+pio device monitor
+```
+
+Note: this board/port may not support auto-reset after flashing (you may need to unplug/replug).
+
+## First-time Wi-Fi setup (captive portal)
+- On boot, if the device can’t connect to saved Wi‑Fi, it starts a setup AP named:
+  - `littleAI-setup-XXXX`
+- Join that AP from your phone/computer.
+- Open:
+  - `http://192.168.4.1/`
+- Enter your Wi‑Fi credentials and save.
+- The device will join your Wi‑Fi and print its STA IP in the serial log.
+
+## WebSocket API
+Connect:
+- `ws://<device-ip>:8080/ws`
+
+All commands are JSON with a top-level `type`.
+
+### Basic face commands
+Set expression:
+```json
+{ "type":"set_expression", "expression":"happy", "intensity":1.0 }
+```
+
+Gaze:
+```json
+{ "type":"gaze", "x":-0.3, "y":0.2 }
+```
+
+Blink:
+```json
+{ "type":"blink", "duration_ms":200 }
+```
+
+Caption:
+```json
+{ "type":"caption", "text":"Hello", "ttl_ms":5000 }
+```
+
+Viseme (mouth activity hint):
+```json
+{ "type":"viseme", "name":"aa", "weight":0.9, "ttl_ms":250 }
+```
+
+Get current state:
+```json
+{ "type":"get_state" }
+```
+
+### Parametric rig controls (sticky overrides)
+These let a controller drive the face directly with continuous values.
+
+Eyes openness (0.0 closed/squint .. 1.0 wide open):
+```json
+{ "type":"eyes", "open":0.8 }
+```
+
+Mouth openness (0.0 closed line .. 1.0 fully open):
+```json
+{ "type":"mouth", "open":1.0 }
+```
+
+Set both:
+```json
+{ "type":"rig", "eye_open":1.0, "mouth_open":1.0 }
+```
+
+Clear overrides (return to expression/viseme-driven behavior):
+```json
+{ "type":"rig_clear" }
+```
+
+### Audio / voice
+Beep:
+```json
+{ "type":"beep", "freq_hz":880, "duration_ms":140 }
+```
+
+Stream speech audio chunk (PCM16LE mono @ 16kHz, base64):
+```json
+{ "type":"speak_pcm", "data_b64":"..." }
+```
+
+## Host-side helper scripts (macOS)
+Create/use the local venv:
+```bash
+python3 -m venv .venv-ws
+source .venv-ws/bin/activate
+pip install websockets
+```
+
+Speak a sentence (macOS `say` → WAV PCM16@16k → streamed to device):
+```bash
+source .venv-ws/bin/activate
+python3 tools/speak_ws.py --ip <device-ip> --text "Hello Dave"
+```
+
+Attention helper (caption + blink + optional beep + optional speech):
+```bash
+source .venv-ws/bin/activate
+python3 tools/attention.py --ip <device-ip> --text "Wow!" --beep --speak
+```
+
+## OpenClaw skill (optional)
+If you use **OpenClaw**, this repo includes a bundled skill so the agent can control the device consistently (same WS API, same helper scripts).
+
+Skill source lives in:
+- `openclaw_skill/littleai/`
+
+Install it (shared skills for this machine):
+```bash
+bash openclaw_skill/install.sh
+```
+
+Install it into the OpenClaw workspace instead:
+```bash
+bash openclaw_skill/install.sh --workspace
+```
+
+Optionally create the skill’s venv + install Python deps (`websockets`):
+```bash
+bash openclaw_skill/install.sh --with-venv
+```
+
+Note: OpenClaw loads skills at **session start** — restart OpenClaw / start a new chat to pick it up.
+
+## License
+This project is licensed under the **GNU GPLv3**. If you distribute binaries (e.g., firmware in a device), you must also provide the corresponding source code under GPLv3.
+
+## Notes
+- The device uses **port 8080** for the WS server.
+- Captive portal is only available when SoftAP is active; on STA it does not currently host a config web UI.
+- `managed_components/` is generated by the ESP-IDF Component Manager on first build and is not intended to be committed.
+- `waveshare_ref/` is a large local reference bundle (includes binaries) and is intentionally excluded from Git.
