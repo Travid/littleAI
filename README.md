@@ -10,7 +10,7 @@ Hardware:
 
 ## What works right now
 - Face UI (LVGL) on AMOLED: eyes/pupils/blink/mouth + caption
-- WebSocket server: `ws://<device-ip>:8080/ws`
+- WebSocket server: `ws://DEVICE_IP:8080/ws`
 - Wi‑Fi captive portal (SoftAP) on first boot / when STA fails:
   - Join `littleAI-setup-XXXX`
   - Portal: `http://192.168.4.1/`
@@ -70,7 +70,7 @@ Note: this board/port may not support auto-reset after flashing (you may need to
 
 ## WebSocket API
 Connect:
-- `ws://<device-ip>:8080/ws`
+- `ws://DEVICE_IP:8080/ws`
 
 All commands are JSON with a top-level `type`.
 
@@ -150,13 +150,13 @@ pip install websockets
 Speak a sentence (macOS `say` → WAV PCM16@16k → streamed to device):
 ```bash
 source .venv-ws/bin/activate
-python3 tools/speak_ws.py --ip <device-ip> --text "Hello Dave"
+python3 tools/speak_ws.py --ip DEVICE_IP --text "Hello Dave"
 ```
 
 Attention helper (caption + blink + optional beep + optional speech):
 ```bash
 source .venv-ws/bin/activate
-python3 tools/attention.py --ip <device-ip> --text "Wow!" --beep --speak
+python3 tools/attention.py --ip DEVICE_IP --text "Wow!" --beep --speak
 ```
 
 ## OpenClaw skill (optional)
