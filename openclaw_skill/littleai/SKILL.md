@@ -7,9 +7,9 @@ description: Control the littleAI ESP32-S3 face+speaker device over its WebSocke
 
 Control Dave’s littleAI device via WebSocket.
 
-Defaults in this setup:
-- Device IP: `192.168.1.158`
-- WS endpoint: `ws://192.168.1.158:8080/ws`
+Defaults (example):
+- Device IP: `DEVICE_IP`
+- WS endpoint: `ws://DEVICE_IP:8080/ws`
 
 If the IP changes, ask the user for the current STA IP (it prints in serial logs after Wi‑Fi connects).
 
@@ -26,14 +26,21 @@ bash {baseDir}/scripts/ensure_venv.sh
 
 ```bash
 source {baseDir}/.venv/bin/activate
-python3 {baseDir}/scripts/speak_ws.py --ip 192.168.1.158 --text "Hello Dave"
+python3 {baseDir}/scripts/speak_ws.py --ip DEVICE_IP --text "Hello Dave"
 ```
 
 3) Attention (caption + blink + optional beep + optional speak):
 
 ```bash
 source {baseDir}/.venv/bin/activate
-python3 {baseDir}/scripts/attention.py --ip 192.168.1.158 --mode normal --text "Wow!" --beep --speak
+python3 {baseDir}/scripts/attention.py --ip DEVICE_IP --mode normal --text "Wow!" --beep --speak
+```
+
+4) Gateway-boot greeting (yawn + randomized hello):
+
+```bash
+source {baseDir}/.venv/bin/activate
+python3 {baseDir}/scripts/boot_greet.py --ip DEVICE_IP
 ```
 
 ## WS protocol
