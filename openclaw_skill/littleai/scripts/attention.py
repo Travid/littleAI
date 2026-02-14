@@ -7,8 +7,8 @@ Drives BOTH the face and audio:
 - optional beep pattern
 
 Examples:
-  python3 {baseDir}/scripts/attention.py --ip 192.168.1.158 --text "Dinner is ready" --speak
-  python3 {baseDir}/scripts/attention.py --ip 192.168.1.158 --text "Check email" --mode urgent --beep --speak
+  python3 {baseDir}/scripts/attention.py --ip DEVICE_IP --text "Dinner is ready" --speak
+  python3 {baseDir}/scripts/attention.py --ip DEVICE_IP --text "Check email" --mode urgent --beep --speak
 
 Modes:
   gentle: 1 beep + small blink + happy

@@ -8,9 +8,9 @@ This script drives BOTH the face and audio:
 
 Examples:
   source .venv-ws/bin/activate
-  python3 tools/attention.py --ip 192.168.1.158 --text "Dinner is ready" --speak
+  python3 tools/attention.py --ip DEVICE_IP --text "Dinner is ready" --speak
 
-  python3 tools/attention.py --ip 192.168.1.158 --text "Check email" --mode urgent --beep --speak
+  python3 tools/attention.py --ip DEVICE_IP --text "Check email" --mode urgent --beep --speak
 
 Modes:
   gentle: 1 beep + small blink + happy

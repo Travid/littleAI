@@ -2,7 +2,7 @@
 """Generate TTS on macOS using `say` and stream PCM chunks to littleAI over WebSocket.
 
 Usage:
-  python3 {baseDir}/scripts/speak_ws.py --ip 192.168.1.158 --text "Hello Dave"
+  python3 {baseDir}/scripts/speak_ws.py --ip DEVICE_IP --text "Hello Dave"
 
 Notes:
 - WS: ws://<ip>:8080/ws
